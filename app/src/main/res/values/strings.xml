@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">Stock Hawk</string>
+
+    <string name="action_example" translatable="false">Example action</string>
+
+    <string name="action_settings" translatable="false">Settings</string>
+
+    <string name="action_change_units">Change Units</string>
+    <string name="symbol_search">Symbol Search</string>
+    <string name="content_test">Search for a Stock Symbol</string>
+    <string name="input_hint" translatable="false">FB</string>
+    <string name="input_prefill" translatable="false"></string>
+    <string name="network_toast">Uh-oh! This app requires an internet connection</string>
+
+
+    <!--for stock trace over time-->
+    <string name="price_over_time">Stock Price Over Time</string>
+
+
+    <string-array name="time_spane">
+        <item>1Y</item>
+        <item>6M</item>
+        <item>3M</item>
+        <item>1M</item>
+    </string-array>
+
+
+
+    <string name="stock_already_saved">This stock is already saved!</string>
+    <string name="symbol_not_exist">" does't exist"</string>
+    <string name="add_new_stock">Add new Stock</string>
+
+    <string name="no_stock">Tap + to add a stock</string>
+
+    <string name="no_internet">No network available</string>
+    <string name="title_widget_today">Today Stock</string>
+    <string name="empty_stock_list_widget">Empty stock list</string>
+
+
+</resources>
