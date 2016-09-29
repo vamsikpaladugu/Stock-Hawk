@@ -79,14 +79,14 @@ public class Utils {
         }
       }
     } catch (JSONException e){
-      Log.e(LOG_TAG, "String to JSON failed: " + e);
+      //Log.e(LOG_TAG, "String to JSON failed: " + e);
     }
     return batchOperations;
   }
 
   public static String truncateBidPrice(JSONObject jsonObject) throws JSONException {
 
-    Log.v("bidPrice",""+jsonObject.getString("Bid"));
+    //Log.v("bidPrice",""+jsonObject.getString("Bid"));
 
     if (!jsonObject.isNull("Bid")) {
       String bidPrice = String.format("%.2f", Float.parseFloat(jsonObject.getString("Bid")));

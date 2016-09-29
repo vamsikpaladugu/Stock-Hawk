@@ -9,7 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -22,6 +24,7 @@ import com.github.mikephil.charting.formatter.AxisValueFormatter;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.sam_chordas.android.stockhawk.R;
+import com.sam_chordas.android.stockhawk.rest.Utils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,6 +43,8 @@ public class StockDetailFragment extends Fragment {
 
     LineChart chart;
     private Spinner spDuration;
+    ProgressBar progressBar;
+
 
     List<String> xMonth;
 
@@ -54,6 +59,10 @@ public class StockDetailFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_stockdetail, container, false);
+
+        progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+
+
 
         spDuration = (Spinner) view.findViewById(R.id.spDuration);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_duration_textview, getResources().getStringArray(R.array.time_spane));
@@ -83,7 +92,7 @@ public class StockDetailFragment extends Fragment {
 
 
                     default:
-                        getData(Calendar.YEAR, -1);
+                        getData(Calendar.MONTH, -1);
                         break;
 
 
@@ -104,48 +113,23 @@ public class StockDetailFragment extends Fragment {
 
     private void getData(int field, int value) {
 
-        Calendar calEnd = Calendar.getInstance();
-
-        String BASE_URL = "https://query.yahooapis.com/v1/public/yql?q=";
-        String SYMBOL = "\"" + getActivity().getIntent().getExtras().getString("symb") + "\"";
-
-
-
-        String END_DATE = "\"" + calEnd.get(Calendar.YEAR) + "-" +formatMonth(calEnd.get(Calendar.MONTH))+ "-" + calEnd.get(Calendar.DAY_OF_MONTH) + "\"";
-
-        Calendar calStart = Calendar.getInstance();
-        calStart.add(field, value);
-
-        String START_DATE = "\"" + calStart.get(Calendar.YEAR) + "-" + formatMonth(calStart.get(Calendar.MONTH)) + "-" + calStart.get(Calendar.DAY_OF_MONTH) + "\"";
-
-        String YQL_STATEMENT = "select * from yahoo.finance.historicaldata where symbol =" + SYMBOL + "  and startDate =" + START_DATE + "  and endDate = " + END_DATE;
-        String END_URL = "&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys";
-
-
-        String url = BASE_URL + YQL_STATEMENT + END_URL;
-
-        log.v("url", url.replace(" ", "%20"));
-
-
-        Log.v("Start", "" + START_DATE);
-
-        Log.v("end", "" + END_DATE);
+        progressBar.setVisibility(View.VISIBLE);
 
         AsyncHttpClient client = new AsyncHttpClient();
-        client.get(url.replace(" ", "%20"), new AsyncHttpResponseHandler() {
+        client.get(buildURL(field,value), new AsyncHttpResponseHandler() {
 
 
             @Override
             public void onSuccess(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody) {
 
+                progressBar.setVisibility(View.GONE);
 
                 try {
 
                     JSONObject object = new JSONObject(new String(responseBody));
 
-                    Log.v("outp", object.toString());
-
                     drawChart(object);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -156,21 +140,21 @@ public class StockDetailFragment extends Fragment {
             @Override
             public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, byte[] responseBody, Throwable error) {
 
+                progressBar.setVisibility(View.GONE);
+
+                if(Utils.isNetworkAvalible(getActivity()))
+                    Toast.makeText(getActivity(), R.string.try_again_loading_graph, Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(getActivity(), R.string.no_internet, Toast.LENGTH_SHORT).show();
+
             }
         });
 
 
     }
 
-    private String formatMonth(int i) {
 
-        i=i+1;
 
-        if (i<10)
-            return "0"+i;
-        else
-            return ""+i;
-    }
 
 
     public void drawChart(JSONObject jsonObject) throws JSONException {
@@ -185,7 +169,7 @@ public class StockDetailFragment extends Fragment {
         List<Entry> entries = new ArrayList<Entry>();
 
 
-        Log.v("json", jsonArray.toString());
+        //Log.v("json", jsonArray.toString());
 
         xMonth.clear();
 
@@ -203,7 +187,7 @@ public class StockDetailFragment extends Fragment {
             entries.add(new Entry(i, (float) Double.parseDouble(dayObject.getString("Close"))));
         }
 
-        Log.v("entries", "" + entries.size());
+        //Log.v("entries", "" + entries.size());
 
         LineDataSet dataSet = new LineDataSet(entries, "Label"); // add entries to dataset
         dataSet.setColor(Color.RED);
@@ -241,8 +225,8 @@ public class StockDetailFragment extends Fragment {
             }
         });
 
-        Log.v("Max", "" + chart.getYMax());
-        Log.v("Min", "" + chart.getYMin());
+        //Log.v("Max", "" + chart.getYMax());
+        //Log.v("Min", "" + chart.getYMin());
 
 
         YAxis ryAxis = chart.getAxisRight();
@@ -268,9 +252,45 @@ public class StockDetailFragment extends Fragment {
 
         chart.setDescription("Max: $" + chart.getYMax() + "," + "Min: $" + chart.getYMin());
 
-        //chart.setContentDescription("price variation chart Max: $"+chart.getYMax()+","+"Min: $"+chart.getYMin());
+        chart.setContentDescription(getString(R.string.chart_description)+" Max: $"+chart.getYMax()+","+"Min: $"+chart.getYMin());
 
 
+    }
+
+
+
+    private String buildURL(int field, int value) {
+
+        Calendar calEnd = Calendar.getInstance();
+
+        String BASE_URL = "https://query.yahooapis.com/v1/public/yql?q=";
+        String SYMBOL = "\"" + getActivity().getIntent().getExtras().getString(StockDetailActivity.GET_SYMBOL) + "\"";
+
+        String END_DATE = "\"" + calEnd.get(Calendar.YEAR) + "-" +formatMonth(calEnd.get(Calendar.MONTH))+ "-" + calEnd.get(Calendar.DAY_OF_MONTH) + "\"";
+
+        Calendar calStart = Calendar.getInstance();
+        calStart.add(field, value);
+
+        String START_DATE = "\"" + calStart.get(Calendar.YEAR) + "-" + formatMonth(calStart.get(Calendar.MONTH)) + "-" + calStart.get(Calendar.DAY_OF_MONTH) + "\"";
+
+        String YQL_STATEMENT = "select * from yahoo.finance.historicaldata where symbol =" + SYMBOL + "  and startDate =" + START_DATE + "  and endDate = " + END_DATE;
+        String END_URL = "&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys";
+
+        String url = ""+BASE_URL + YQL_STATEMENT + END_URL;
+
+        return url.replace(" ", "%20");
+
+    }
+
+
+    private String formatMonth(int i) {
+
+        i=i+1;
+
+        if (i<10)
+            return "0"+i;
+        else
+            return ""+i;
     }
 
 

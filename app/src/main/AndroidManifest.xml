@@ -50,7 +50,7 @@
 
 
         <receiver
-            android:name=".widget.TodayWidgetProvider"
+            android:name=".widget.StockWidgetProvider"
             android:label="@string/title_widget_today" >
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

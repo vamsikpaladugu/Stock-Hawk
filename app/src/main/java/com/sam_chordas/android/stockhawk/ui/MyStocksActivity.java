@@ -36,7 +36,7 @@ import com.google.android.gms.gcm.PeriodicTask;
 import com.google.android.gms.gcm.Task;
 import com.melnykov.fab.FloatingActionButton;
 import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
-import com.sam_chordas.android.stockhawk.widget.TodayWidgetProvider;
+import com.sam_chordas.android.stockhawk.widget.StockWidgetProvider;
 
 
 public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -95,7 +95,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                     public void onItemClick(View v, int position) {
 
                         Intent intent = new Intent(mContext, StockDetailActivity.class);
-                        intent.putExtra("symb", (String) v.getTag());
+                        intent.putExtra(StockDetailActivity.GET_SYMBOL, (String) v.getTag());
 
                         startActivity(intent);
 
@@ -204,10 +204,6 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         if (id == R.id.action_change_units) {
             // this is for changing stock changes from percent value to dollar value
@@ -257,10 +253,10 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         }
 
 
-        ComponentName name = new ComponentName(this, TodayWidgetProvider.class);
+        ComponentName name = new ComponentName(this, StockWidgetProvider.class);
         int [] ids = AppWidgetManager.getInstance(this).getAppWidgetIds(name);
 
-        Intent intent = new Intent(this,TodayWidgetProvider.class);
+        Intent intent = new Intent(this,StockWidgetProvider.class);
         intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,ids);
         sendBroadcast(intent);

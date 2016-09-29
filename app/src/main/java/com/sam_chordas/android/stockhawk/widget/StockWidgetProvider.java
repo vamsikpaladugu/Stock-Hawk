@@ -17,7 +17,7 @@ import com.sam_chordas.android.stockhawk.ui.StockDetailActivity;
  * Created by DELL on 9/26/2016.
  */
 
-public class TodayWidgetProvider extends AppWidgetProvider {
+public class StockWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -45,7 +45,6 @@ public class TodayWidgetProvider extends AppWidgetProvider {
         //passing app widget id to that RemoteViews Service
         svcIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
         //setting a unique Uri to the intent
-        //don't know its purpose to me right now
         svcIntent.setData(Uri.parse(svcIntent.toUri(Intent.URI_INTENT_SCHEME)));
         //setting adapter to listview of the widget
         remoteViews.setRemoteAdapter(R.id.listViewWidget, svcIntent);

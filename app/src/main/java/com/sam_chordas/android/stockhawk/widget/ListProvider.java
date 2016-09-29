@@ -105,29 +105,10 @@ public class ListProvider implements RemoteViewsService.RemoteViewsFactory {
         fillInIntent.putExtras(extras);
         remoteView.setOnClickFillInIntent(R.id.llItem, fillInIntent);
 
-        //int sdk = Build.VERSION.SDK_INT;
-
         if (listItem.is_up == 1) {
-           /* if (sdk < Build.VERSION_CODES.JELLY_BEAN){
-
-                remoteView.setInt(R.id.change, "setBackgroundResource", R.drawable.percent_change_pill_green);
-
-            }else {*/
-
             remoteView.setInt(R.id.change, "setBackgroundResource", R.drawable.percent_change_pill_green);
-
-
-            //}
         } else {
-           /* if (sdk < Build.VERSION_CODES.JELLY_BEAN) {
-
-                remoteView.setInt(R.id.change, "setBackgroundDrawable", R.drawable.percent_change_pill_red);
-
-            } else{*/
-
             remoteView.setInt(R.id.change, "setBackgroundResource", R.drawable.percent_change_pill_red);
-
-            //}
         }
 
 
@@ -136,8 +117,6 @@ public class ListProvider implements RemoteViewsService.RemoteViewsFactory {
 
     @Override
     public RemoteViews getLoadingView() {
-
-
         return null;
     }
 

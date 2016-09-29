@@ -20,13 +20,16 @@
         android:background="@color/material_blue_500">
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:textColor="@color/colorWhite"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.ActionMode.Title"
-            android:contentDescription="@string/app_name"
-            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/widget_title_desc"
+            android:gravity="start|center_vertical"
+            android:textAlignment="viewStart"
             android:text="@string/app_name" />
+
     </FrameLayout>
 
     <FrameLayout
